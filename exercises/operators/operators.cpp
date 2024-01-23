@@ -4,7 +4,41 @@
 
 class Fraction {
  public:
-  // TODO: constructors and operators
+  Fraction(unsigned int num, unsigned int denom): m_num(num), m_denom(denom) {}
+  Fraction(unsigned int num): m_num(num), m_denom(1) {}
+
+  Fraction operator*(unsigned int coeff) {
+	  Fraction rr{m_num, m_denom};
+	  rr *= coeff;
+	  rr.normalize();
+	  return rr;
+  }
+
+  friend Fraction operator*(unsigned int coeff, Fraction r);
+
+  friend std::ostream& operator<<(std::ostream& os, const Fraction& r);
+
+  friend bool operator==(const Fraction& l, const Fraction& r);
+  friend bool operator!=(const Fraction& l, const Fraction& r);
+  friend bool operator<(const Fraction& l, const Fraction& r);
+  friend bool operator<=(const Fraction& l, const Fraction& r);
+  friend bool operator>(const Fraction& l, const Fraction& r);
+  friend bool operator>=(const Fraction& l, const Fraction& r);
+  
+  friend Fraction operator*(const Fraction l, const Fraction r);
+
+  Fraction& operator*=(unsigned int coeff) {
+	  m_num *= coeff;
+	  this->normalize();
+	  return *this;
+  }
+
+  Fraction& operator*=(const Fraction& r) {
+	  m_num *= r.m_num;
+	  m_denom *= r.m_denom;
+	  this->normalize();
+	  return *this;
+  }
 
  private:
   void normalize() {
@@ -16,16 +50,71 @@ class Fraction {
   unsigned int m_num, m_denom;
 };
 
-// TODO: operators
+/* Operators */
+Fraction operator*(unsigned int coeff, Fraction r) {
+	Fraction rr{r.m_num, r.m_denom};
+	rr *= coeff;
+	rr.normalize();
+	return rr;
+}
 
+Fraction operator*(const Fraction l, const Fraction r) {
+	Fraction rr{l.m_num*r.m_num, l.m_denom*r.m_denom};
+	rr.normalize();
+	return rr;
+}
 
-void printAndCheck(std::string const & what, Fraction const & result, Fraction const & expected) {
+std::ostream& operator<<(std::ostream& os, const Fraction& r) {
+	os << r.m_num << "/" << r.m_denom;
+	return os;
+}
+
+bool operator==(const Fraction& l, const Fraction& r) {
+  Fraction ll = l;
+  ll.normalize();
+  Fraction rr = r;
+  rr.normalize();
+  return ((ll.m_num == rr.m_num) && (ll.m_denom == rr.m_denom));
+}
+
+bool operator!=(const Fraction& l, const Fraction& r) {
+  return !(l == r);
+}
+
+bool operator<(const Fraction& l, const Fraction& r) {
+  Fraction ll = l;
+  ll.normalize();
+  Fraction rr = r;
+  rr.normalize();
+  return ll.m_num*rr.m_denom < rr.m_num*ll.m_denom;
+}
+
+bool operator<=(const Fraction& l, const Fraction& r) {
+  return l < r || l == r;
+}
+
+bool operator>(const Fraction& l, const Fraction& r) {
+  Fraction ll = l;
+  ll.normalize();
+  Fraction rr = r;
+  rr.normalize();
+  return ll.m_num*rr.m_denom > rr.m_num*ll.m_denom;
+}
+
+bool operator>=(const Fraction& l, const Fraction& r) {
+  return l > r || l == r;
+}
+
+void printAndCheck(
+		std::string const & what, Fraction const & result, Fraction const & expected) {
   const bool passed = result == expected;
-  std::cout << std::left << std::setw(40) << what << ": " << (passed ? "PASS" : "** FAIL **") << "    " << result << "\n";
+  std::cout << std::left << std::setw(40) << what << ": "
+	  << (passed ? "PASS" : "** FAIL **") << "    " << result << "\n";
 }
 void printAndCheck(std::string const & what, bool result, bool expected) {
   const bool passed = result == expected;
-  std::cout << std::left << std::setw(40) << what << ": " << (passed ? "PASS" : "** FAIL **") << "    " << result << "\n";
+  std::cout << std::left << std::setw(40) << what << ": "
+	  << (passed ? "PASS" : "** FAIL **") << "    " << result << "\n";
 }
 
 int main() {
@@ -88,4 +177,6 @@ int main() {
   // operator@=
   // * it usually suffices to implement operator< and operator== and derive the
   // other relational operators from them. C++20 will do part of this automatically.
+  
+  return 0;
 }
