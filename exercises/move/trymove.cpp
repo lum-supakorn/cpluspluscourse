@@ -4,21 +4,21 @@
 
 /**
  * An attempt to make a movable class. It allocates memory on construction, and has
- * array semantics. (Prefer std::array or std::vector instead of hand-crafted solutions, though.)
- * We made it copyable by providing copy constructor and assignment operator, but note that we
- * are violating the rule of 5, so it's not moveable yet.
+ * array semantics. (Prefer std::array or std::vector instead of hand-crafted solutions,
+ * though.) We made it copyable by providing copy constructor and assignment operator, but
+ * note that we are violating the rule of 5, so it's not moveable yet.
 */
 class CustomArray {
     static constexpr std::size_t size = 10000;
 
 public:
     CustomArray() = default;
-    CustomArray(CustomArray const & other)
+    CustomArray(CustomArray const& other)
     {
         // Delegate copying to the assignment operator
         *this = other;
     }
-    CustomArray & operator=(const CustomArray & other)
+    CustomArray& operator=(const CustomArray& other)
     {
         // We don't do anything when asked to self assign
         if (this == &other) return *this;
@@ -34,7 +34,7 @@ public:
     // *******
 
 
-    int & operator[](std::size_t index) { return m_storage[index]; }
+    int& operator[](std::size_t index) { return m_storage[index]; }
 
 private:
     std::unique_ptr<int[]> m_storage { std::make_unique<int[]>(size) };
@@ -44,7 +44,7 @@ private:
  * A function to randomly swap entries.
  * Unfortunately, it needs three copies to execute each swap.
 */
-void randomiseOrder(std::vector<CustomArray> & v) {
+void randomiseOrder(std::vector<CustomArray>& v) {
     // we randomise by applying 10*len random swaps
     const auto len = v.size();
     std::default_random_engine e;
