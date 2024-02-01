@@ -8,6 +8,7 @@
 #include <numeric>
 #include <span>
 #include <vector>
+#include <memory>
 
 
 /*
@@ -54,11 +55,12 @@ double sumEntries(std::span<double const> range) {
 // data to sumEntries() for reading, so the ownership stays with this function. Unfortunately,
 // something goes wrong and we didn't use smart pointers. Understand and fix the memory leak.
 void doStuffWithData() {
-    auto data = new std::array<double, 10000>{};
+    // auto data = new std::array<double, 10000>{};
+	auto data = std::make_unique<std::array<double,10000>>();
 
     sumEntries(*data);
 
-    delete data;
+    // delete data;
 }
 
 
