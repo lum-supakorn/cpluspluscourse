@@ -99,8 +99,11 @@ struct LargeObject {
 };
 
 // A factory function to create large objects.
-LargeObject* createLargeObject() {
-    auto object = new LargeObject();
+std::unique_ptr<LargeObject> createLargeObject() {
+	// This just allocates a new large object on the heap and return the address to that
+	// memory block.
+    // auto object = new LargeObject();
+	auto object = std::make_unique<LargeObject>();
     // Imagine there is more setup steps of "object" here
     // ...
 
@@ -114,16 +117,25 @@ void changeLargeObject(LargeObject& object) {
 }
 
 void problem2() {
-    std::vector<LargeObject*> largeObjects;
+	// Pointers to objects in a collection (in this case std::vector)
+    std::vector<std::unique_ptr<LargeObject>> largeObjects;
 
     for (unsigned int i=0; i < 10; ++i) {
+		// Allocates new large objects and push the addresses into the vector
         auto newObj = createLargeObject();
-        largeObjects.push_back(newObj);
+		// Now newObj owns the resource allocated with createLargeObject() which is a unique
+		// pointer (only one owner allowed) so we cannot just push_back and copy newObj into
+		// the vector but must transfer the ownership to the other unique_ptr inside the
+		// vector.
+        largeObjects.push_back(std::move(newObj));
     }
 
     for (const auto& obj : largeObjects) {
         changeLargeObject(*obj);
     }
+
+	// Memory leak because we didn't delete each large object that we allocated.
+	// How should a smart pointer solve this issue?
 }
 
 
@@ -341,8 +353,8 @@ void problem4_2() {
 
 
 int main() {
-    problem1();
-    // problem2();
+    // problem1();
+    problem2();
     // problem3();
     // problem4_1();
     // problem4_2();
